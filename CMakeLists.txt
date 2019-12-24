@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+set(PROJECT_NAME "sioclient")
 PROJECT(sioclient)
 
 option(BUILD_SHARED_LIBS "Build the shared library" OFF)
@@ -30,13 +31,12 @@ set(SIO_INCLUDEDIR ${CMAKE_CURRENT_LIST_DIR})
 add_library(sioclient ${ALL_SRC})
 target_include_directories(sioclient PRIVATE ${Boost_INCLUDE_DIRS} 
     ${CMAKE_CURRENT_LIST_DIR}/src 
-    ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp 
     ${CMAKE_CURRENT_LIST_DIR}/lib/rapidjson/include
 )
 
 set_property(TARGET sioclient PROPERTY CXX_STANDARD 11)
 set_property(TARGET sioclient PROPERTY CXX_STANDARD_REQUIRED ON)
-target_link_libraries(sioclient PRIVATE ${Boost_LIBRARIES})
+target_link_libraries(sioclient PRIVATE ${Boost_LIBRARIES} websocketpp)
 if(BUILD_SHARED_LIBS)
 set_target_properties(sioclient
 	PROPERTIES
@@ -51,14 +51,13 @@ if(OPENSSL_FOUND)
 add_library(sioclient_tls ${ALL_SRC})
 target_include_directories(sioclient_tls PRIVATE ${Boost_INCLUDE_DIRS} 
     ${CMAKE_CURRENT_LIST_DIR}/src 
-    ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp 
     ${CMAKE_CURRENT_LIST_DIR}/lib/rapidjson/include
     ${OPENSSL_INCLUDE_DIR}
 )
 
 set_property(TARGET sioclient_tls PROPERTY CXX_STANDARD 11)
 set_property(TARGET sioclient_tls PROPERTY CXX_STANDARD_REQUIRED ON)
-target_link_libraries(sioclient_tls PRIVATE ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} )
+target_link_libraries(sioclient_tls PRIVATE ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} websocketpp)
 target_compile_definitions(sioclient_tls PRIVATE -DSIO_TLS)
 if(BUILD_SHARED_LIBS)
 set_target_properties(sioclient_tls
@@ -71,14 +70,15 @@ list(APPEND TARGET_LIBRARIES sioclient_tls)
 
 endif()
 
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+
 install(FILES ${ALL_HEADERS} 
-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/include"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
 install(TARGETS ${TARGET_LIBRARIES}
-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/lib/${CMAKE_BUILD_TYPE}"
-)
-
-install(FILES ${Boost_LIBRARIES} 
-    DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build/lib/${CMAKE_BUILD_TYPE}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 )
