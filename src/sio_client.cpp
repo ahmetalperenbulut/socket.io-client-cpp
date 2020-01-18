@@ -14,7 +14,8 @@ using std::stringstream;
 namespace sio
 {
     client::client():
-        m_impl(new client_impl())
+        m_impl(new client_impl()),
+        m_path("socket.io")
     {
     }
     
@@ -70,18 +71,18 @@ namespace sio
 
     void client::connect(const std::string& uri)
     {
-        m_impl->connect(uri, {}, {});
+        m_impl->connect(uri, {}, {}, m_path);
     }
 
     void client::connect(const std::string& uri, const std::map<string,string>& query)
     {
-        m_impl->connect(uri, query, {});
+        m_impl->connect(uri, query, {}, m_path);
     }
 
     void client::connect(const std::string& uri, const std::map<std::string,std::string>& query,
                          const std::map<std::string,std::string>& http_extra_headers)
     {
-        m_impl->connect(uri, query, http_extra_headers);
+        m_impl->connect(uri, query, http_extra_headers, m_path);
     }
     
     socket::ptr const& client::socket(const std::string& nsp)
@@ -123,6 +124,11 @@ namespace sio
     void client::set_reconnect_delay_max(unsigned millis)
     {
         m_impl->set_reconnect_delay_max(millis);
+    }
+
+    void client::set_path(const std::string& path)
+    {
+        m_path = path;
     }
     
 }
