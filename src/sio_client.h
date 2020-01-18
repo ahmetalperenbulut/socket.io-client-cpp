@@ -67,6 +67,8 @@ namespace sio
 
         void set_reconnect_delay_max(unsigned millis);
         
+        void set_path(const std::string& path);
+
         sio::socket::ptr const& socket(const std::string& nsp = "");
         
         // Closes the connection
@@ -82,7 +84,7 @@ namespace sio
         //disable copy constructor and assign operator.
         client(client const&){}
         void operator=(client const&){}
-        
+        std::string m_path;
         client_impl* m_impl;
     };
     
